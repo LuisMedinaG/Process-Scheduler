@@ -27,7 +27,6 @@ namespace STL_ACT_1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            int x = 0;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
