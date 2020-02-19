@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace STL_ACT_1
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private BatchProcessing batchs;
@@ -26,6 +21,18 @@ namespace STL_ACT_1
             TAM_LOTE = 5;
 
             InitializeComponent();
+        }
+
+        internal BatchProcessing BatchProcessing {
+            get => default;
+            set {
+            }
+        }
+
+        internal Process Process {
+            get => default;
+            set {
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,11 +70,11 @@ namespace STL_ACT_1
                 batchs.processes.Enqueue(p);
 
                 /* --- WINDOW --- */
-                //txtBoxNomPro.Clear();
+                txtBoxNomPro.Clear();
                 txtBoxOpeIzq.Value = 0;
                 txtBoxOpeDer.Value = 0;
                 txtBoxTME.Value = 1;
-                //txtBoxIdPro.Clear();
+                txtBoxIdPro.Clear();
 
                 batchs.totalProcess--;
                 if (batchs.totalProcess == 0) {
@@ -183,6 +190,11 @@ namespace STL_ACT_1
 
             txtBoxNumProces.IsEnabled = !state;
             bttnStart.IsEnabled = !state;
+        }
+
+        private void TeclaPresionada(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            MessageBox.Show(e.Key.ToString());
         }
     }
 }

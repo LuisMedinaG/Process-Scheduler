@@ -1,4 +1,4 @@
-﻿<Window x:Class="STL_ACT_1.MainWindow"
+﻿<Window x:Name="MainWindow1" x:Class="STL_ACT_1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,15 +6,19 @@
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:local="clr-namespace:STL_ACT_1"
         mc:Ignorable="d"
-        Title="Simulador Procesamiento por Lotes " Height="548" Width="1057">
+        Title="Simulador Procesamiento por Lotes " Height="548" Width="1057" KeyDown="TeclaPresionada">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="955*"/>
+            <ColumnDefinition Width="94*"/>
+        </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Datos globales" HorizontalAlignment="Left" Height="63" Margin="248,10,0,0" VerticalAlignment="Top" Width="783"/>
+        <GroupBox Header="Datos globales" HorizontalAlignment="Left" Height="63" Margin="248,10,0,0" VerticalAlignment="Top" Width="783" Grid.ColumnSpan="2"/>
         <GroupBox Header="Proceso" HorizontalAlignment="Left" Height="365" Margin="14,80,0,0" VerticalAlignment="Top" Width="215"/>
         <Label Content="Número de procesos" HorizontalAlignment="Left" Margin="22,18,0,0" VerticalAlignment="Top" Width="193" FontWeight="Bold"/>
         <TextBox x:FieldModifier="public" x:Name="txtBoxNomPro" Width="193" Height="26" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="22,167,0,0" IsEnabled="False" TabIndex="3" MaxLines="1"/>
         <Label Content="Nombre de Programador" HorizontalAlignment="Left" Margin="22,142,0,0" VerticalAlignment="Top" Width="193" Height="26" FontWeight="Bold"/>
-        
+
         <wpfTool:UIntegerUpDown x:Name="txtBoxOpeIzq" HorizontalAlignment="Left" Margin="26,256,0,0" VerticalAlignment="Top" Width="65" RenderTransformOrigin="-0.135,0.7" TabIndex="4" Maximum="100000" Value="0" IsEnabled="False" Text="0"/>
         <ComboBox x:Name="cbOperators" HorizontalAlignment="Left" Margin="100,255,0,0" VerticalAlignment="Top" Width="40" Height="20" TabIndex="5" RenderTransformOrigin="1.25,0.5">
             <ComboBoxItem IsSelected="True" Content="+"></ComboBoxItem>
@@ -30,7 +34,7 @@
         <Label Content="Operacion a realizar (+, -, *, /)" HorizontalAlignment="Left" Margin="22,211,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
         <Label Content="Tiempo Maximo Estimado (TME)" HorizontalAlignment="Left" Margin="22,291,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
         <Button x:Name="bttnNxtPro" Content="Siguiente Proceso / Finalizar" HorizontalAlignment="Left" Margin="22,461,0,0" VerticalAlignment="Top" Width="193" Height="37" TabIndex="9" IsEnabled="False" Click="bttnNxtPro_Click"/>
-        <wpfTool:UIntegerUpDown x:Name="txtBoxNumProces" HorizontalAlignment="Left" Margin="22,49,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.135,0.7" TabIndex="1"/>
+        <wpfTool:UIntegerUpDown x:Name="txtBoxNumProces" HorizontalAlignment="Left" Margin="22,49,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True"/>
         <GroupBox Header="Lote en ejecución" HorizontalAlignment="Left" Height="418" Margin="248,80,0,0" VerticalAlignment="Top" Width="211">
             <DataGrid HorizontalAlignment="Left" Height="375" Margin="10,10,0,0" VerticalAlignment="Top" Width="177" x:Name="tblLotEje">
                 <DataGrid.Columns>
@@ -39,7 +43,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
-        <GroupBox Header="Procesos terminados" HorizontalAlignment="Left" Height="420" Margin="724,78,0,0" VerticalAlignment="Top" Width="307">
+        <GroupBox Header="Procesos terminados" HorizontalAlignment="Left" Height="420" Margin="724,78,0,0" VerticalAlignment="Top" Width="307" Grid.ColumnSpan="2">
             <DataGrid HorizontalAlignment="Left" Height="377" Margin="10,10,0,0" VerticalAlignment="Top" Width="277" x:Name="tblProFi">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header = "No. programa" Binding="{Binding ProcessId}" />
@@ -70,5 +74,5 @@
         <Label x:Name="lblNumPro" Content=". . ." HorizontalAlignment="Left" Margin="496,300,0,0" VerticalAlignment="Top" Width="193"/>
         <Label Content="Lotes pendientes" HorizontalAlignment="Left" Margin="657,31,0,0" VerticalAlignment="Top" Width="102" FontWeight="Bold"/>
         <Label x:Name="lblContGlo" Content=". . ." HorizontalAlignment="Left" Margin="508,31,0,0" VerticalAlignment="Top" Width="100"/>
-        </Grid>
+    </Grid>
 </Window>
