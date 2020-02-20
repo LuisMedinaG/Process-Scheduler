@@ -6,73 +6,49 @@
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:local="clr-namespace:STL_ACT_1"
         mc:Ignorable="d"
-        Title="Simulador Procesamiento por Lotes " Height="548" Width="1057" KeyDown="TeclaPresionada">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="955*"/>
-            <ColumnDefinition Width="94*"/>
-        </Grid.ColumnDefinitions>
+        Title="Simulador Procesamiento por Lotes " Height="502" Width="874" KeyDown="TeclaPresionada">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="850"/>
+    </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Datos globales" HorizontalAlignment="Left" Height="63" Margin="248,10,0,0" VerticalAlignment="Top" Width="783" Grid.ColumnSpan="2"/>
-        <GroupBox Header="Proceso" HorizontalAlignment="Left" Height="365" Margin="14,80,0,0" VerticalAlignment="Top" Width="215"/>
-        <Label Content="Número de procesos" HorizontalAlignment="Left" Margin="22,18,0,0" VerticalAlignment="Top" Width="193" FontWeight="Bold"/>
-        <TextBox x:FieldModifier="public" x:Name="txtBoxNomPro" Width="193" Height="26" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="22,167,0,0" IsEnabled="False" TabIndex="3" MaxLines="1"/>
-        <Label Content="Nombre de Programador" HorizontalAlignment="Left" Margin="22,142,0,0" VerticalAlignment="Top" Width="193" Height="26" FontWeight="Bold"/>
+    <GroupBox Header="Datos globales" HorizontalAlignment="Left" Height="63" Margin="285,10,0,0" VerticalAlignment="Top" Width="560"/>
+    <Label Content="Número de procesos" HorizontalAlignment="Left" Margin="22,18,0,0" VerticalAlignment="Top" Width="243" FontWeight="Bold"/>
+    <wpfTool:UIntegerUpDown x:Name="txtBoxTotalProc" HorizontalAlignment="Left" Margin="25,50,0,0" VerticalAlignment="Top" Width="170" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True"/>
+    <GroupBox Header="Procesos en Espera de Lote en Ejecución" HorizontalAlignment="Left" Height="375" Margin="20,80,0,0" VerticalAlignment="Top" Width="255">
+      <DataGrid HorizontalAlignment="Left" Height="340" Margin="10,10,0,0" VerticalAlignment="Top" Width="225" x:Name="tblLotEje">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header = "Núm. Programa" Binding="{Binding ProcessId}" HeaderStringFormat="" Width="Auto"/>
+          <DataGridTextColumn Header = "TME" Binding="{Binding TME}" Width="Auto"/>
+          <DataGridTextColumn Binding="{Binding TME}" Header="Tiempo Restante" Width="Auto"/>
+        </DataGrid.Columns>
+      </DataGrid>
+    </GroupBox>
+    <GroupBox Header="Procesos terminados" HorizontalAlignment="Left" Height="380" Margin="543,80,0,0" VerticalAlignment="Top" Width="307">
+      <DataGrid HorizontalAlignment="Left" Height="335" Margin="10,10,0,0" VerticalAlignment="Top" Width="278" x:Name="tblProFin">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header = "Núm. programa" Binding="{Binding ProcessId}" />
+          <DataGridTextColumn Header = "Operación y datos" Binding="{Binding Operation}"/>
+          <DataGridTextColumn Header = "Resultado" Binding="{Binding Result}"/>
+        </DataGrid.Columns>
+      </DataGrid>
+    </GroupBox>
+    <Button x:Name="bttnStart" Content="Empezar" HorizontalAlignment="Left" Margin="205,50,0,0" VerticalAlignment="Top" Width="61" Click="Button_Click" TabIndex="2"/>
+    <Label Content="Contador global:" HorizontalAlignment="Left" Margin="320,35,0,0" VerticalAlignment="Top" Width="108" FontWeight="Bold"/>
+    <Label x:Name="lblLotPen" Content=". . ." HorizontalAlignment="Left" Margin="655,32,0,0" VerticalAlignment="Top" Width="102"/>
 
-        <wpfTool:UIntegerUpDown x:Name="txtBoxOpeIzq" HorizontalAlignment="Left" Margin="26,256,0,0" VerticalAlignment="Top" Width="65" RenderTransformOrigin="-0.135,0.7" TabIndex="4" Maximum="100000" Value="0" IsEnabled="False" Text="0"/>
-        <ComboBox x:Name="cbOperators" HorizontalAlignment="Left" Margin="100,255,0,0" VerticalAlignment="Top" Width="40" Height="20" TabIndex="5" RenderTransformOrigin="1.25,0.5">
-            <ComboBoxItem IsSelected="True" Content="+"></ComboBoxItem>
-            <ComboBoxItem Content="-"></ComboBoxItem>
-            <ComboBoxItem Content="*"></ComboBoxItem>
-            <ComboBoxItem Content="/"></ComboBoxItem>
-        </ComboBox>
-
-        <wpfTool:UIntegerUpDown x:Name="txtBoxOpeDer" HorizontalAlignment="Left" Margin="150,255,0,0" VerticalAlignment="Top" Width="65" RenderTransformOrigin="-0.135,0.7" TabIndex="6" IsEnabled="False" Maximum="10000" Text="0"/>
-        <wpfTool:UIntegerUpDown x:Name="txtBoxTME" HorizontalAlignment="Left" Margin="22,328,0,0" VerticalAlignment="Top" Width="193" Height="20" TabIndex="7" IsEnabled="False" IsTabStop="True" DefaultValue="1" Maximum="70" Value="1" Text="0" Minimum="1"/>
-        <TextBox x:Name="txtBoxIdPro" Width="193" Height="26" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="22,398,0,0" IsEnabled="False" TabIndex="8"/>
-
-        <Label Content="Operacion a realizar (+, -, *, /)" HorizontalAlignment="Left" Margin="22,211,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Label Content="Tiempo Maximo Estimado (TME)" HorizontalAlignment="Left" Margin="22,291,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Button x:Name="bttnNxtPro" Content="Siguiente Proceso / Finalizar" HorizontalAlignment="Left" Margin="22,461,0,0" VerticalAlignment="Top" Width="193" Height="37" TabIndex="9" IsEnabled="False" Click="bttnNxtPro_Click"/>
-        <wpfTool:UIntegerUpDown x:Name="txtBoxNumProces" HorizontalAlignment="Left" Margin="22,49,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True"/>
-        <GroupBox Header="Lote en ejecución" HorizontalAlignment="Left" Height="418" Margin="248,80,0,0" VerticalAlignment="Top" Width="211">
-            <DataGrid HorizontalAlignment="Left" Height="375" Margin="10,10,0,0" VerticalAlignment="Top" Width="177" x:Name="tblLotEje">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header = "Nombre programador" Binding="{Binding PrgmmrName}"/>
-                    <DataGridTextColumn Header = "TME" Binding="{Binding TME}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
-        <GroupBox Header="Procesos terminados" HorizontalAlignment="Left" Height="420" Margin="724,78,0,0" VerticalAlignment="Top" Width="307" Grid.ColumnSpan="2">
-            <DataGrid HorizontalAlignment="Left" Height="377" Margin="10,10,0,0" VerticalAlignment="Top" Width="277" x:Name="tblProFi">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header = "No. programa" Binding="{Binding ProcessId}" />
-                    <DataGridTextColumn Header = "Operación y datos" Binding="{Binding Operation}"/>
-                    <DataGridTextColumn Header = "Resultado" Binding="{Binding Result}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
-        <Button x:Name="bttnStart" Content="Empezar" HorizontalAlignment="Left" Margin="154,49,0,0" VerticalAlignment="Top" Width="61" Click="Button_Click" TabIndex="2"/>
-        <Label x:Name="lblNumLot" Content="..." HorizontalAlignment="Left" Margin="128,111,0,0" VerticalAlignment="Top" Width="87" Height="26"/>
-        <Label x:Name="lblNumLot_Copy" Content="Numero de lote:" HorizontalAlignment="Left" Margin="22,111,0,0" VerticalAlignment="Top" Width="106" Height="26" FontWeight="Bold"/>
-        <Label Content="Contador global:" HorizontalAlignment="Left" Margin="403,31,0,0" VerticalAlignment="Top" Width="100" FontWeight="Bold"/>
-        <Label Content="Número de programa" HorizontalAlignment="Left" Margin="22,373,0,0" VerticalAlignment="Top" Width="193" Height="26" FontWeight="Bold"/>
-        <Label x:Name="lblLotPen" Content=". . ." HorizontalAlignment="Left" Margin="764,31,0,0" VerticalAlignment="Top" Width="102"/>
-
-        <GroupBox Header="Proceso en ejecución" HorizontalAlignment="Left" Height="418" Margin="471,80,0,0" VerticalAlignment="Top" Width="242"/>
-        <Label Content="Nombre de Programador" HorizontalAlignment="Left" Margin="496,112,0,0" VerticalAlignment="Top" Width="193" Height="26" FontWeight="Bold"/>
-        <Label x:Name="lblNomPro_PE" Content=". . ." HorizontalAlignment="Left" Margin="496,138,0,0" VerticalAlignment="Top" Width="193"/>
-        <Label Content="Operacion a realizar (+, -, *, /, %)" HorizontalAlignment="Left" Margin="496,163,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Label x:Name="lblOpe_PE" Content=". . ." HorizontalAlignment="Left" Margin="496,190,0,0" VerticalAlignment="Top" Width="193"/>
-        <Label Content="Tiempo Maximo Estimado (TME)" HorizontalAlignment="Left" Margin="496,220,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Label x:Name="lblTME_PE" Content=". . ." HorizontalAlignment="Left" Margin="496,247,0,0" VerticalAlignment="Top" Width="193"/>
-        <Label Content="Número de programa" HorizontalAlignment="Left" Margin="496,273,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Label x:Name="lblTieRes" Content=". . ." HorizontalAlignment="Left" Margin="496,419,0,0" VerticalAlignment="Top" Width="193"/>
-        <Label Content="Tiempo transcurrido en ejecución" HorizontalAlignment="Left" Margin="496,334,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Label x:Name="lblTieTra" Content=". . ." HorizontalAlignment="Left" Margin="496,361,0,0" VerticalAlignment="Top" Width="193"/>
-        <Label Content="Tiempo restante por ejecutar" HorizontalAlignment="Left" Margin="496,396,0,0" VerticalAlignment="Top" Width="193" Height="27" FontWeight="Bold"/>
-        <Label x:Name="lblNumPro" Content=". . ." HorizontalAlignment="Left" Margin="496,300,0,0" VerticalAlignment="Top" Width="193"/>
-        <Label Content="Lotes pendientes" HorizontalAlignment="Left" Margin="657,31,0,0" VerticalAlignment="Top" Width="102" FontWeight="Bold"/>
-        <Label x:Name="lblContGlo" Content=". . ." HorizontalAlignment="Left" Margin="508,31,0,0" VerticalAlignment="Top" Width="100"/>
-    </Grid>
+    <GroupBox Header="Proceso en ejecución" HorizontalAlignment="Left" Height="375" Margin="286,80,0,0" VerticalAlignment="Top" Width="245"/>
+    <Label Content="Operacion a realizar (+, -, *, /, %)" HorizontalAlignment="Left" Margin="310,226,0,0" VerticalAlignment="Top" Width="200" Height="27" FontWeight="Bold"/>
+    <Label x:Name="lblOpe_PE" Content=". . ." HorizontalAlignment="Left" Margin="312,258,0,0" VerticalAlignment="Top" Width="200"/>
+    <Label Content="Tiempo Maximo Estimado (TME)" HorizontalAlignment="Left" Margin="310,168,0,0" VerticalAlignment="Top" Width="200" Height="27" FontWeight="Bold"/>
+    <Label x:Name="lblTME_PE" Content=". . ." HorizontalAlignment="Left" Margin="310,195,0,0" VerticalAlignment="Top" Width="200"/>
+    <Label Content="Número de programa" HorizontalAlignment="Left" Margin="310,110,0,0" VerticalAlignment="Top" Width="200" Height="27" FontWeight="Bold"/>
+    <Label x:Name="lblTieRes" Content=". . ." HorizontalAlignment="Left" Margin="310,393,0,0" VerticalAlignment="Top" Width="200"/>
+    <Label Content="Tiempo transcurrido en ejecución" HorizontalAlignment="Left" Margin="310,298,0,0" VerticalAlignment="Top" Width="200" Height="27" FontWeight="Bold"/>
+    <Label x:Name="lblTieTra" Content=". . ." HorizontalAlignment="Left" Margin="310,329,0,0" VerticalAlignment="Top" Width="200"/>
+    <Label Content="Tiempo restante por ejecutar" HorizontalAlignment="Left" Margin="310,368,0,0" VerticalAlignment="Top" Width="200" Height="27" FontWeight="Bold"/>
+    <Label x:Name="lblNumPro" Content=". . ." HorizontalAlignment="Left" Margin="310,135,0,0" VerticalAlignment="Top" Width="200"/>
+    <Label Content="Lotes pendientes:" HorizontalAlignment="Left" Margin="535,35,0,0" VerticalAlignment="Top" Width="114" FontWeight="Bold"/>
+    <Label x:Name="lblContGlo" Content=". . ." HorizontalAlignment="Left" Margin="430,35,0,0" VerticalAlignment="Top" Width="100"/>
+  </Grid>
 </Window>
