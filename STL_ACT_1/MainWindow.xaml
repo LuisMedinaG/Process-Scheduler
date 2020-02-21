@@ -16,20 +16,20 @@
     <Label Content="Número de procesos" HorizontalAlignment="Left" Margin="22,18,0,0" VerticalAlignment="Top" Width="243" FontWeight="Bold"/>
     <wpfTool:UIntegerUpDown x:Name="txtBoxTotalProc" HorizontalAlignment="Left" Margin="25,50,0,0" VerticalAlignment="Top" Width="170" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True"/>
     <GroupBox Header="Procesos en Espera de Lote en Ejecución" HorizontalAlignment="Left" Height="375" Margin="20,80,0,0" VerticalAlignment="Top" Width="255">
-      <DataGrid HorizontalAlignment="Left" Height="340" Margin="10,10,0,0" VerticalAlignment="Top" Width="225" x:Name="tblLotEje">
+      <DataGrid HorizontalAlignment="Left" Height="340" Margin="10,10,0,0" VerticalAlignment="Top" Width="225" x:Name="tblCurrBatch">
         <DataGrid.Columns>
-          <DataGridTextColumn Header = "Núm. Programa" Binding="{Binding ProcessId}" HeaderStringFormat="" Width="Auto"/>
+          <DataGridTextColumn Header = "No. Programa" Binding="{Binding ID}" HeaderStringFormat="" Width="Auto"/>
           <DataGridTextColumn Header = "TME" Binding="{Binding TME}" Width="Auto"/>
-          <DataGridTextColumn Binding="{Binding TME}" Header="Tiempo Restante" Width="Auto"/>
+          <DataGridTextColumn Binding="{Binding RemainigTime}" Header="Tiempo Restante" Width="Auto"/>
         </DataGrid.Columns>
       </DataGrid>
     </GroupBox>
     <GroupBox Header="Procesos terminados" HorizontalAlignment="Left" Height="380" Margin="543,80,0,0" VerticalAlignment="Top" Width="307">
-      <DataGrid HorizontalAlignment="Left" Height="335" Margin="10,10,0,0" VerticalAlignment="Top" Width="278" x:Name="tblProFin">
+      <DataGrid HorizontalAlignment="Left" Height="335" Margin="10,10,0,0" VerticalAlignment="Top" Width="278" x:Name="tblProFin" SelectionChanged="tblProFin_SelectionChanged">
         <DataGrid.Columns>
-          <DataGridTextColumn Header = "Núm. programa" Binding="{Binding ProcessId}" />
+          <DataGridTextColumn Header = "No. programa" Binding="{Binding ID}" />
           <DataGridTextColumn Header = "Operación y datos" Binding="{Binding Operation}"/>
-          <DataGridTextColumn Header = "Resultado" Binding="{Binding Result}"/>
+          <DataGridTextColumn Header = "Resultado" Binding="{Binding OpeResult}"/>
         </DataGrid.Columns>
       </DataGrid>
     </GroupBox>
@@ -49,6 +49,6 @@
     <Label Content="Tiempo restante por ejecutar" HorizontalAlignment="Left" Margin="310,368,0,0" VerticalAlignment="Top" Width="200" Height="27" FontWeight="Bold"/>
     <Label x:Name="lblNumPro" Content=". . ." HorizontalAlignment="Left" Margin="310,135,0,0" VerticalAlignment="Top" Width="200"/>
     <Label Content="Lotes pendientes:" HorizontalAlignment="Left" Margin="535,35,0,0" VerticalAlignment="Top" Width="114" FontWeight="Bold"/>
-    <Label x:Name="lblContGlo" Content=". . ." HorizontalAlignment="Left" Margin="430,35,0,0" VerticalAlignment="Top" Width="100"/>
+    <Label x:Name="lblGlobTime" Content=". . ." HorizontalAlignment="Left" Margin="430,35,0,0" VerticalAlignment="Top" Width="100"/>
   </Grid>
 </Window>

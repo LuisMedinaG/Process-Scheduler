@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -7,13 +8,13 @@ namespace STL_ACT_1
 {
   public partial class MainWindow : Window
   {
-    private MultiProcessing batchs;
+    private Processing batches;
     private string keyPressed;
     private int globTime;
-    private bool isInterr = false;
+
+    private bool isInterruption = false;
     private bool isPaused = false;
     private bool isError = false;
-    private static Random r = new Random();
 
     public MainWindow()
     {
@@ -25,133 +26,106 @@ namespace STL_ACT_1
 
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-      batchs = new MultiProcessing((int)txtBoxTotalProc.Value);
+      int TotalProcesses = (int)txtBoxTotalProc.Value;
+      batches = new Processing(TotalProcesses);
 
-      if (batchs.total > 0) {
-        txtBoxTotalProc.Text = batchs.total.ToString();
+      if (TotalProcesses > 0) {
+        txtBoxTotalProc.Text = TotalProcesses.ToString();
         tblProFin.Items.Clear();
+        ToggleFields(false);
+        // -------------------- //
+        batches.CreateBatches();
+        StartProcessing();
+        // -------------------- //
         ToggleFields(true);
-        CreateBatchs();
       }
-    }
-
-    private void CreateBatchs()
-    {
-      int batchSze = 5;
-      /******* ADD BATCH *******/
-      for (int i = 1, j = 1; i <= batchs.total; i++, j++) {
-        if (j == batchSze) {
-          batchs.idx++;
-          j = 1;
-        }
-        /******* ADD PROCESS TO BATCH *******/
-        CreateProcess(i, batchs.processes);
-        
-      }
-      StartProcessing();
-    }
-
-    private static void CreateProcess(int i, Queue<Process> processes)
-    {
-      int tme = r.Next(5, 6);
-      int num1 = r.Next(0, 100);
-      int opeIdx = r.Next(0, 5);
-      int num2 = r.Next(0, 100);
-      processes.Enqueue(new Process(i, tme, num1, opeIdx, num2));
     }
 
     private async void StartProcessing()
     {
-      int remainingBatchs = batchs.idx;
+      int remainingBatchs = batches.TotalBatches;
       Process currProc;
 
-      ToggleFields(false);
       while (remainingBatchs > 0) {
-        lblLotPen.Content = remainingBatchs--.ToString();
+        lblLotPen.Content = (remainingBatchs--).ToString(); // WINDOW
 
         /* ----- LOTE EN EJECUCION ----- */
-        batchs.MoveProssToCurrBatch();
-        AddToCurrBacthTbl();
+        batches.MoveProcessToBatch();
+        AddProcToCurrBacthTbl(); // WINDOW
 
-        for (int i = 0; i < 5; i++) {
-          if (batchs.prosCurrBatch.Count != 0) {
-            currProc = batchs.prosCurrBatch.Dequeue();
+        for (int i = 0; i < 5; i++) {/*5*/
+          if (batches.CurrBatch.Count != 0) {
+            currProc = batches.CurrBatch.Dequeue();
+            tblCurrBatch.Items.Remove(currProc);
 
             /* ----- PROCESO EN EJECUCION ----- */
-            lblNumPro.Content = currProc.ProcessId;
-            lblTME_PE.Content = currProc.TME;
-            lblOpe_PE.Content = currProc.Operation;
+            lblNumPro.Content = currProc.ID; // WINDOW
+            lblOpe_PE.Content = currProc.Operation.ToString(); // WINDOW
+            lblTME_PE.Content = currProc.TME; // WINDOW
 
             await DoProcess(currProc);
 
-            if (isInterr) {
-              batchs.prosCurrBatch.Enqueue(currProc);
-              //AddToCurrBacthTbl();
-              tblLotEje.Items.Remove(currProc);
-              tblLotEje.Items.Add(currProc);
-              isInterr = false;
+            if (isInterruption) {
+              MessageBox.Show("Interrupcion.");
+              batches.CurrBatch.Enqueue(currProc);
+              tblCurrBatch.Items.Add(currProc);
+              isInterruption = false;
               i--;
+            } else if (isError) {
+              MessageBox.Show("Error.");
+              currProc.OpeResult = "ERROR!";
+              tblProFin.Items.Add(currProc);
+              isError = false;
             } else {
-              /* ----- PROCESOS TERMINADOS ----- */
-              tblLotEje.Items.Remove(currProc);
+              /* ----- AGRGAR A PROCESOS TERMINADOS ----- */
               tblProFin.Items.Add(currProc);
             }
           }
         }
         tblProFin.Items.Add(new Process());
       }
-      ToggleFields(false);
-      lblLotPen.Content = "0";
-      MessageBox.Show("Fin de procesos.", "Info");
+      MessageBox.Show("Fin de procesos.");
     }
 
-    private void AddToCurrBacthTbl()
+    private void AddProcToCurrBacthTbl()
     {
-      tblLotEje.Items.Clear();
-      foreach (Process p in batchs.prosCurrBatch) {
-        tblLotEje.Items.Add(p);
+      tblCurrBatch.Items.Clear();
+      foreach (Process p in batches.CurrBatch) {
+        tblCurrBatch.Items.Add(p);
       }
     }
 
     private async Task DoProcess(Process p)
     {
-      bool MessageShowed = true;
-      int remainingTime = p.TME;
-      int elapsedTime = 0;
-      while (remainingTime > 0) {
+      bool MessageShowed = false;
+      while (p.RemainigTime > 0) {
+        if (isInterruption || isError) {
+          break;
+        }
+        if (isPaused) {
+          if (!MessageShowed) {
+            MessageBox.Show("Pausa");
+            MessageShowed = true;
+          }
+        } else {
+          lblTieTra.Content = $"{p.TME - p.RemainigTime} sec";
+          lblTieRes.Content = $"{p.RemainigTime--} sec";
+          lblGlobTime.Content = $"{globTime++} sec";
+        }
         await Task.Delay(1000);
         UpdateFlags();
-        if (isPaused) {
-          if (MessageShowed) {
-            MessageBox.Show("Pausa");
-            MessageShowed = false;
-          }
-          keyPressed = "";
-        } else if (isInterr) {
-          MessageBox.Show("Interrupcion.");
-          keyPressed = "";
-          break;
-        } else if (isError) {
-          MessageBox.Show("Error.");
-          isError = false;
-          keyPressed = "";
-          break;
-        } else {
-          lblTieTra.Content = (elapsedTime++).ToString() + " sec";
-          lblTieRes.Content = (remainingTime--).ToString() + " sec";
-          lblContGlo.Content = (globTime++).ToString();
-        }
       }
     }
 
     private void UpdateFlags()
     {
       switch (keyPressed) {
-        case "I": isInterr = true; break;
+        case "I": isInterruption = true; break;
         case "E": isError = true; break;
         case "P": isPaused = true; break;
         case "C": isPaused = false; break;
       }
+      keyPressed = "";
     }
 
     private void ToggleFields(bool state)

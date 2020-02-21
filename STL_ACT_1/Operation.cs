@@ -4,38 +4,34 @@ namespace STL_ACT_1
 {
   class Operation
   {
-    private int izq;
-    private int der;
+    private int num1;
+    private int num2;
     private char ope;
-    private char[] opes = { '+', '-', '*', '/', '%' };
+    private static char[] opes = { '+', '-', '*', '/', '%' };
 
-    public Operation(int izq, int ope, int der)
+    public Operation(int num1, int ope, int num2)
     {
-      ope = opes[ope];
-      this.izq = izq;
-      if (ope == '/') {
-        this.der = der;
-      } else {
-        this.der = der;
-      }
+      this.num1 = num1;
+      this.ope = opes[ope];
+      this.num2 = num2;
     }
 
     public string Solve()
     {
       double res = 0;
       switch (ope) {
-        case '+': res = izq + der; break;
-        case '-': res = izq - der; break;
-        case '*': res = izq * der; break;
-        case '/': res = izq / der; break;
-        case '%': res = izq % der; break;
+        case '+': res = num1 + num2; break;
+        case '-': res = num1 - num2; break;
+        case '*': res = num1 * num2; break;
+        case '/': res = num1 / num2; break;
+        case '%': res = num1 % num2; break;
       }
       return res.ToString();
     }
 
     public override string ToString()
     {
-      return $"{izq} {ope} {der}";
+      return $"{num1} {ope} {num2}";
     }
   }
 }

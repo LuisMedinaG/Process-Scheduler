@@ -1,29 +1,30 @@
-﻿
-using System;
+﻿using System;
 
 namespace STL_ACT_1
 {
   class Process : IEquatable<Process>
   {
-    public string Operation { get; set; }
-    public string Result { get; set; }
-    public int ProcessId { get; set; }
+    public int ID { get; set; }
     public int TME { get; set; }
+    public int RemainigTime { get; set; }
+    public string Operation { get; set; }
+    public string OpeResult { get; set; }
 
     public Process() { }
 
-    public Process(int ProcessId, int TME, int izq, int opeIdx, int der)
+    public Process(int ID, int TME, int num1, int opeIdx, int num2)
     {
-      var ope = new Operation(izq, opeIdx, der);
-      this.ProcessId = ProcessId;
+      this.ID = ID;
       this.TME = TME;
+      RemainigTime = TME;
+      var ope = new Operation(num1, opeIdx, num2);
       Operation = ope.ToString();
-      Result = ope.Solve();
+      OpeResult = ope.Solve();
     }
 
     public bool Equals(Process other)
     {
-      return this.ProcessId == other.ProcessId;
+      return this.ID == other.ID;
     }
   }
 }
