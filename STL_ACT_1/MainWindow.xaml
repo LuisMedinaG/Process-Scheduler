@@ -14,7 +14,7 @@
 
     <GroupBox Header="Datos globales" HorizontalAlignment="Left" Height="63" Margin="285,10,0,0" VerticalAlignment="Top" Width="560"/>
     <Label Content="Número de procesos" HorizontalAlignment="Left" Margin="22,18,0,0" VerticalAlignment="Top" Width="243" FontWeight="Bold"/>
-    <wpfTool:UIntegerUpDown x:Name="txtBoxTotalProc" HorizontalAlignment="Left" Margin="25,50,0,0" VerticalAlignment="Top" Width="170" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True"/>
+    <wpfTool:UIntegerUpDown x:Name="txtBoxTotalProc" HorizontalAlignment="Left" Margin="25,50,0,0" VerticalAlignment="Top" Width="170" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True" MaxLength="3" Minimum="1" Maximum="100" DefaultValue="0" AllowTextInput="False" ParsingNumberStyle="Integer" Text="1"/>
     <GroupBox Header="Procesos en Espera de Lote en Ejecución" HorizontalAlignment="Left" Height="375" Margin="20,80,0,0" VerticalAlignment="Top" Width="255">
       <DataGrid HorizontalAlignment="Left" Height="340" Margin="10,10,0,0" VerticalAlignment="Top" Width="225" x:Name="tblCurrBatch">
         <DataGrid.Columns>
@@ -25,10 +25,10 @@
       </DataGrid>
     </GroupBox>
     <GroupBox Header="Procesos terminados" HorizontalAlignment="Left" Height="380" Margin="543,80,0,0" VerticalAlignment="Top" Width="307">
-      <DataGrid HorizontalAlignment="Left" Height="335" Margin="10,10,0,0" VerticalAlignment="Top" Width="278" x:Name="tblProFin" SelectionChanged="tblProFin_SelectionChanged">
+      <DataGrid HorizontalAlignment="Left" Height="335" Margin="10,10,0,0" VerticalAlignment="Top" Width="278" x:Name="tblProFin">
         <DataGrid.Columns>
           <DataGridTextColumn Header = "No. programa" Binding="{Binding ID}" />
-          <DataGridTextColumn Header = "Operación y datos" Binding="{Binding Operation}"/>
+          <DataGridTextColumn Header = "Operación y datos" Binding="{Binding Ope}"/>
           <DataGridTextColumn Header = "Resultado" Binding="{Binding OpeResult}"/>
         </DataGrid.Columns>
       </DataGrid>

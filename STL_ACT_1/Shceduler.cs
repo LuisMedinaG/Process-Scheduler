@@ -3,22 +3,24 @@ using System.Collections.Generic;
 
 namespace STL_ACT_1
 {
-  class Processing
+  class Shceduler
   {
-    public Queue<Process> Processes { get; set; }
-    public Queue<Process> CurrBatch { get; set; }
-    public Stack<Process> ProcCompleted { get; set; }
+    public Queue<Process> New { get; set; }
+    public Queue<Process> Ready { get; set; }
+    public Process Running { get; set; }
+    public Stack<Process> Terminated { get; set; }
+
     public int TotalProcesses { get; set; }
     public int TotalBatches { get; set; }
-    
-    private static readonly Random r = new Random();
-    private static readonly int BATCH_SIZE = 5;
 
-    public Processing(int totalProcesses)
+    private static readonly Random r = new Random();
+    public static readonly int BATCH_SIZE = 5;
+
+    public Shceduler(int totalProcesses)
     {
-      Processes = new Queue<Process>();
-      CurrBatch = new Queue<Process>();
-      ProcCompleted = new Stack<Process>();
+      New = new Queue<Process>();
+      Ready = new Queue<Process>();
+      Terminated = new Stack<Process>();
 
       TotalProcesses = totalProcesses;
       TotalBatches = 1;
@@ -37,22 +39,23 @@ namespace STL_ACT_1
       }
     }
 
-    private void CreateProcess(int id)
+    private void CreateProcess(int ID)
     {
-      // Random values
-      int TME = r.Next(3, 10); // (8, 18)
+      int TME = r.Next(8, 18);
       int num1 = r.Next(0, 100);
       int opeIdx = r.Next(0, 5);
       int num2 = r.Next(0, 100);
-      Processes.Enqueue(new Process(id, TME, num1, opeIdx, num2));
+      if (opeIdx == 3) { num2++; }
+      var Ope = new Operation(num1, opeIdx, num2);
+      New.Enqueue(new Process(ID, TME, Ope));
     }
 
     public void MoveProcessToBatch()
     {
       int cont = 0;
-      while (cont < BATCH_SIZE && Processes.Count != 0) {
-        Process p = Processes.Dequeue();
-        CurrBatch.Enqueue(p);
+      while (cont < BATCH_SIZE && New.Count != 0) {
+        Process p = New.Dequeue();
+        Ready.Enqueue(p);
         cont++;
       }
     }
