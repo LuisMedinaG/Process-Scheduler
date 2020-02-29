@@ -1,129 +1,93 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace STL_ACT_1
 {
   public partial class MainWindow : Window
   {
-    private Shceduler batches;
-    private string keyPressed;
-    private int globTime;
-
-    private bool isInterruption = false;
-    private bool isPaused = false;
-    private bool isError = false;
+    private Shceduler schedule;
+    public string KeyPressed;
 
     public MainWindow()
     {
-      globTime = 0;
-      keyPressed = "";
-
       InitializeComponent();
     }
 
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-      int TotalProcesses = (int)txtBoxTotalProc.Value;
-      batches = new Shceduler(TotalProcesses);
+      int totalProcesses = (int)txtBoxTotalProc.Value;
 
-      if (TotalProcesses > 0) {
-        txtBoxTotalProc.Text = TotalProcesses.ToString();
-        tblProFin.Items.Clear(); // Borrar los procesos finales
+      if (totalProcesses > 0) {
+        txtBoxTotalProc.Text = totalProcesses.ToString();
+
+        tblTerminated.Items.Clear();
+        tblBlocked.Items.Clear();
+        tblReady.Items.Clear();
+        tblTimes.Items.Clear();
+        tblNew.Items.Clear();
         ToggleFields(false);
-        // -------------------- //
-        batches.CreateBatches();
-        StartProcessing();
-        // -------------------- //
+
+        // ---------- SCHEDULER ---------- //
+        schedule = new Shceduler();
+        schedule.CreateProcesses(totalProcesses);
+        schedule.StartProcessing(this);
+        // ------------------------------- //
+
         ToggleFields(true);
       }
     }
 
-    private async void StartProcessing()
+    internal void UpdateRunnigLabels(Process p)
     {
-      int remainingBatchs = batches.TotalBatches;
-      Process currProc;
+      lblNumPro.Content = p.ID;
+      lblTME_PE.Content = p.TME;
+      lblOpe_PE.Content = p.Ope;
+      lblTieTra.Content = p.tTra;
+      lblTieRest.Content = p.tRest;
+    }
 
-      while (remainingBatchs > 0) {
-        lblLotPen.Content = (--remainingBatchs).ToString(); // WINDOW
+    internal void UpdateNewTable()
+    {
+      tblNew.Items.Clear();
+      foreach (Process p in schedule.New) {
+        tblNew.Items.Add(p);
+      }
+    }
 
-        /* ----- LOTE EN EJECUCION ----- */
-        batches.MoveProcessToBatch();
-        AddProcToCurrBacthTbl(); // WINDOW
+    internal void UpdateReadyTable()
+    {
+      tblReady.Items.Clear();
+      foreach (Process p in schedule.Ready) {
+        p.tEsp++;
+        tblReady.Items.Add(p);
+      }
+    }
 
-        for (int i = 0; i < batches.BATCH_SIZE; i++) {
-          if (batches.Ready.Count != 0) {
-            currProc = batches.Ready.Dequeue();
-
-            /* ----- PROCESO EN EJECUCION ----- */
-            lblNumPro.Content = currProc.ID; // WINDOW
-            lblTME_PE.Content = currProc.TME; // WINDOW
-            lblOpe_PE.Content = currProc.Ope; // WINDOW
-
-            tblCurrBatch.Items.Remove(currProc);
-
-            await DoProcess(currProc);
-
-            if (isInterruption) {
-              //MessageBox.Show("Interrupcion.");
-              batches.Ready.Enqueue(currProc);
-              tblCurrBatch.Items.Add(currProc);
-              isInterruption = false;
-              i--;
-            } else if (isError) {
-              //MessageBox.Show("Error.");
-              currProc.OpeResult = "ERROR!";
-              tblProFin.Items.Add(currProc);
-              isError = false;
-            } else {
-              /* ----- AGRGAR A PROCESOS TERMINADOS ----- */
-              tblProFin.Items.Add(currProc);
-            }
+    internal void UpdateBlockedTable()
+    {
+      if (schedule.Blocked.Count > 0) {
+        tblBlocked.Items.Clear();
+        bool DeInterrupt = false;
+        foreach (Process p in schedule.Blocked) {
+          if (++p.tBlo > 8) {
+            DeInterrupt = true;
+          } else {
+            tblBlocked.Items.Add(p);
           }
         }
-        tblProFin.Items.Add(new Process());
-      }
-      MessageBox.Show("Fin de procesos.");
-    }
-
-    private void AddProcToCurrBacthTbl()
-    {
-      tblCurrBatch.Items.Clear();
-      foreach (Process p in batches.Ready) {
-        tblCurrBatch.Items.Add(p);
-      }
-    }
-
-    private async Task DoProcess(Process p)
-    {
-      bool MessageShowed = false;
-      while (p.RemainigTime > 0) {
-        if (isInterruption || isError) {
-          break;
+        if (DeInterrupt) {
+          schedule.Deinterrupt();
+          //UpdateReadyTable();
         }
-        if (isPaused) {
-          if (!MessageShowed) {
-            //MessageBox.Show("Pausa");
-            MessageShowed = true;
-          }
-        } else {
-          lblTieTra.Content = $"{p.TME-p.RemainigTime} sec";
-          lblTieRes.Content = $"{p.RemainigTime--} sec";
-          lblGlobTime.Content = $"{globTime++} sec";
-        }
-        await Task.Delay(1000);
-        UpdateFlags();
       }
     }
 
-    private void UpdateFlags()
+    internal void UpdateTimesTable()
     {
-      switch (keyPressed) {
-        case "I": isInterruption = true; break;
-        case "E": isError = true; break;
-        case "P": isPaused = true; break;
-        case "C": isPaused = false; break;
+      foreach (Process p in schedule.Terminated) {
+        tblTimes.Items.Add(p);
       }
-      keyPressed = "";
     }
 
     private void ToggleFields(bool state)
@@ -134,7 +98,7 @@ namespace STL_ACT_1
 
     private void TeclaPresionada(object sender, System.Windows.Input.KeyEventArgs e)
     {
-      keyPressed = e.Key.ToString();
+      KeyPressed = e.Key.ToString();
     }
   }
 }
