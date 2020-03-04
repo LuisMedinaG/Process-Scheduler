@@ -19,20 +19,14 @@ namespace STL_ACT_1
     public int tResp { get; set; }
     public int tEsp { get; set; }
     public int tSer { get; set; }
+    public bool Exists { get; set; }
 
-    public Process() {
+    public Process()
+    {
       ID = 0;
       TME = 0;
       Ope = "";
       OpeResult = "";
-      
-      tLle = 0;
-      tFin = 0;
-      tTra = 0;
-      tBlo = 0;
-      tEsp = 0;
-      tRet = 0;
-      tResp = 0;
     }
 
     public Process(int ID, int TME, Operation Ope)

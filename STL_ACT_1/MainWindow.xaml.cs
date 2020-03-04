@@ -8,7 +8,7 @@ namespace STL_ACT_1
 {
   public partial class MainWindow : Window
   {
-    private Shceduler schedule;
+    private Scheduler.Scheduler schedule;
     public string KeyPressed;
 
     public MainWindow()
@@ -25,18 +25,16 @@ namespace STL_ACT_1
         ClearAll();
         EnableFields(false);
         // ---------- SCHEDULER ---------- //
-        schedule = new Shceduler();
+        schedule = new Scheduler.Scheduler(this);
         schedule.CreateProcesses(totalProcesses);
-        schedule.StartProcessing(this);
+        schedule.StartProcessing();
         // ------------------------------- //
         EnableFields(true);
       }
     }
 
-    internal void UpdateLabels()
+    internal void UpdateLabels(Process p)
     {
-      var p = schedule.Running;
-
       lblNumPro.Content = p.ID;
       lblTME_PE.Content = p.TME;
       lblOpe_PE.Content = p.Ope;
