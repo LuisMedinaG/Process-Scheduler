@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace STL_ACT_1
 {
@@ -20,80 +21,63 @@ namespace STL_ACT_1
 
       if (totalProcesses > 0) {
         txtBoxTotalProc.Text = totalProcesses.ToString();
-
-        tblTerminated.Items.Clear();
-        tblBlocked.Items.Clear();
-        tblReady.Items.Clear();
-        tblTimes.Items.Clear();
-        tblNew.Items.Clear();
-        ToggleFields(false);
-
+        ClearAll();
+        EnableFields(false);
         // ---------- SCHEDULER ---------- //
         schedule = new Shceduler();
         schedule.CreateProcesses(totalProcesses);
         schedule.StartProcessing(this);
         // ------------------------------- //
-
-        ToggleFields(true);
+        EnableFields(true);
       }
     }
 
-    internal void UpdateRunnigLabels(Process p)
+    internal void UpdateLabels()
     {
+      var p = schedule.Running;
+
       lblNumPro.Content = p.ID;
       lblTME_PE.Content = p.TME;
       lblOpe_PE.Content = p.Ope;
       lblTieTra.Content = p.tTra;
-      lblTieRest.Content = p.tRest;
+      lblTieRes.Content = p.tRest;
+
+      lblProRes.Content = (schedule.New.Count + schedule.Ready.Count + schedule.Blocked.Count).ToString();
+      lblGloTime.Content = schedule.GlobalTime.ToString();
     }
 
-    internal void UpdateNewTable()
+    internal void UpdateTableNew()
     {
-      tblNew.Items.Clear();
-      foreach (Process p in schedule.New) {
-        tblNew.Items.Add(p);
+      tblNew.Items.RemoveAt(tblNew.Items.Count);
+    }
+
+    internal void UpdateTable(Queue<Process> collection, DataGrid table)
+    {
+      table.Items.Clear();
+      foreach (Process p in collection) {
+        table.Items.Add(p);
       }
     }
 
-    internal void UpdateReadyTable()
-    {
-      tblReady.Items.Clear();
-      foreach (Process p in schedule.Ready) {
-        p.tEsp++;
-        tblReady.Items.Add(p);
-      }
-    }
-
-    internal void UpdateBlockedTable()
-    {
-      if (schedule.Blocked.Count > 0) {
-        tblBlocked.Items.Clear();
-        bool DeInterrupt = false;
-        foreach (Process p in schedule.Blocked) {
-          if (++p.tBlo > 8) {
-            DeInterrupt = true;
-          } else {
-            tblBlocked.Items.Add(p);
-          }
-        }
-        if (DeInterrupt) {
-          schedule.Deinterrupt();
-          //UpdateReadyTable();
-        }
-      }
-    }
-
-    internal void UpdateTimesTable()
-    {
-      foreach (Process p in schedule.Terminated) {
-        tblTimes.Items.Add(p);
-      }
-    }
-
-    private void ToggleFields(bool state)
+    private void EnableFields(bool state)
     {
       txtBoxTotalProc.IsEnabled = state;
       bttnStart.IsEnabled = state;
+    }
+
+    internal void ClearAll()
+    {
+      tblTerminated.Items.Clear();
+      tblBlocked.Items.Clear();
+      tblReady.Items.Clear();
+      tblTimes.Items.Clear();
+      tblNew.Items.Clear();
+
+      lblNumPro.Content = "";
+      lblTME_PE.Content = "";
+      lblOpe_PE.Content = "";
+      lblTieTra.Content = "";
+      lblTieRes.Content = "";
     }
 
     private void TeclaPresionada(object sender, System.Windows.Input.KeyEventArgs e)

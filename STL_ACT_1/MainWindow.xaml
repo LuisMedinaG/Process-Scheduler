@@ -25,7 +25,7 @@
 
     <GroupBox Header="Datos globales" Margin="8,10,9,5" Grid.ColumnSpan="4" Grid.Column="1"/>
     <Label Content="Contador global:" HorizontalAlignment="Left" Margin="35,30,0,0" VerticalAlignment="Top" Width="108" FontWeight="Bold" Grid.Column="1" Height="26"/>
-    <Label x:Name="lblGlobTime" Content=". . ." HorizontalAlignment="Left" Margin="150,30,0,0" VerticalAlignment="Top" Width="50" Grid.Column="1" Height="26" Grid.ColumnSpan="2"/>
+    <Label x:Name="lblGloTime" Content=". . ." HorizontalAlignment="Left" Margin="150,30,0,0" VerticalAlignment="Top" Width="50" Grid.Column="1" Height="26" Grid.ColumnSpan="2"/>
     <Label Content="Procesos pendientes:" HorizontalAlignment="Left" Margin="11,29,0,0" VerticalAlignment="Top" Width="130" FontWeight="Bold" Grid.Column="2" Height="26"/>
     <Label x:Name="lblProRes" Content=". . ." Margin="143,29,0,0" VerticalAlignment="Top" Grid.Column="2" Height="26" HorizontalAlignment="Left" Width="33"/>
 
@@ -60,7 +60,7 @@
     <Label Content="Tiempo ejecución:" HorizontalAlignment="Left" Margin="20,126,0,0" VerticalAlignment="Top" Width="114" Height="27" FontWeight="Bold" Grid.Column="2" Grid.Row="1"/>
     <Label x:Name="lblTieTra" Content=". . ." HorizontalAlignment="Left" Margin="135,126,0,0" VerticalAlignment="Top" Width="41" Grid.Column="2" Height="26" Grid.Row="1"/>
     <Label Content="Tiempo restante:" HorizontalAlignment="Left" Margin="20,158,0,0" VerticalAlignment="Top" Width="114" Height="27" FontWeight="Bold" Grid.Column="2" Grid.Row="1"/>
-    <Label x:Name="lblTieRest" Content=". . ." HorizontalAlignment="Left" Margin="135,156,0,0" VerticalAlignment="Top" Width="36" Grid.Column="2" Height="26" Grid.Row="1"/>
+    <Label x:Name="lblTieRes" Content=". . ." HorizontalAlignment="Left" Margin="135,156,0,0" VerticalAlignment="Top" Width="36" Grid.Column="2" Height="26" Grid.Row="1"/>
 
 
     <GroupBox Header="Bloqueados" Margin="7,195,5,11" Grid.Column="2" Grid.Row="1">
@@ -88,7 +88,7 @@
           <DataGridTextColumn Header = "T Lle." Binding="{Binding tLle}" Width="Auto" />
           <DataGridTextColumn Header = "T Fin." Binding="{Binding tFin}" Width="Auto"/>
           <DataGridTextColumn Header = "T Ret." Binding="{Binding tRet}" Width="Auto"/>
-          <DataGridTextColumn Header = "T Res." Binding="{Binding tRes}" Width="Auto"/>
+          <DataGridTextColumn Header = "T Res." Binding="{Binding tResp}" Width="Auto"/>
           <DataGridTextColumn Header = "T Esp." Binding="{Binding tEsp}" Width="Auto"/>
           <DataGridTextColumn Header = "T Ser." Binding="{Binding tSer}" Width="Auto"/>
         </DataGrid.Columns>

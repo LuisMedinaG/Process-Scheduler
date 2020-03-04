@@ -1,104 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace STL_ACT_1
 {
   class Shceduler
   {
+    public int GlobalTime { get; set; }
     public Queue<Process> New { get; set; }
     public Queue<Process> Ready { get; set; }
     public Process Running { get; set; }
     public Queue<Process> Blocked { get; set; }
-    public Stack<Process> Terminated { get; set; }
+    public Queue<Process> Terminated { get; set; }
 
     private static readonly Random r = new Random();
     private static readonly int MEMORY_SIZE = 5;
-    private bool wasInterrupted;
+    private bool wasInterru;
     private bool wasBlocked;
-    private int globTime;
 
     public Shceduler()
     {
+      GlobalTime = 0;
       New = new Queue<Process>();
       Ready = new Queue<Process>();
       Running = new Process();
       Blocked = new Queue<Process>();
-      Terminated = new Stack<Process>();
+      Terminated = new Queue<Process>();
     }
 
     public async void StartProcessing(MainWindow mainWindow)
     {
       Admit();
       while (Ready.Count > 0) {
+        // Reset variables
+        wasInterru = false;
+        wasBlocked = false;
+
         Admit();
         Dispatch();
 
-        // Set the variables
-        wasInterrupted = false;
-        wasBlocked = false;
-
         // --------- WINDOW ----------- //
-        mainWindow.UpdateNewTable();
-        mainWindow.UpdateReadyTable();
-        mainWindow.UpdateRunnigLabels(Running);
+        mainWindow.UpdateLabels();
+        mainWindow.UpdateTable(New, mainWindow.tblNew); // TODO
+        mainWindow.UpdateTable(Ready, mainWindow.tblReady);
+        mainWindow.UpdateTable(Terminated, mainWindow.tblTerminated); // TODO
         // ---------------------------- //
 
-        // Time when is admited
-        Running.tLle = globTime;
         await ExecuteRunning(mainWindow);
 
         if (!wasBlocked) {
-          Running.tFin = globTime;
-          Running.tRet = Running.tFin - Running.tLle;
-          // --------- WINDOW ----------- //
-          mainWindow.tblTerminated.Items.Add(Running);
-          mainWindow.lblProRes.Content = New.Count.ToString();
-          // ---------------------------- //
           Exit();
+        } else if (Ready.Count == 0) {
+          while (Blocked.Count > 0) {
+            Deinterrupt();
+          }
         }
       }
-      mainWindow.UpdateRunnigLabels(new Process());
-      mainWindow.UpdateTimesTable();
+      mainWindow.UpdateTable(Terminated, mainWindow.tblTerminated); // TODO
+      mainWindow.UpdateTable(Terminated, mainWindow.tblTimes);
     }
 
-    /********************************************************/
     private async Task ExecuteRunning(MainWindow mainWindow)
     {
-      // Time is attended for the first time
-      Running.tResp = globTime;
       while (Running.tTra < Running.TME) {
         // Stops for a second
         await Task.Delay(1000);
-        // Checks that there's no key pressed
+        // Increase time for all processes
+        IncreaseTime();
+        // Update process remaining time
+        Running.tRest = Running.TME - Running.tTra;
+
         await WasKeyPressed(mainWindow);
-        if (wasBlocked || wasInterrupted) {
-          return;
-        } else {
-          // Increases current time and Decrease remainig time
-          Running.tRest = Running.TME - Running.tTra++;
-          // Update bloked processes table
-          mainWindow.UpdateBlockedTable();
-          // Update runnig process labels
-          mainWindow.UpdateRunnigLabels(Running);
-          // Update label and increas global time
-          mainWindow.lblGlobTime.Content = globTime++;
-        }
+
+        // --------- WINDOW ----------- //
+        mainWindow.UpdateLabels();
+        mainWindow.UpdateTable(Blocked, mainWindow.tblBlocked);
+        // ---------------------------- //
+
+        if (wasBlocked || wasInterru) { return; }
       }
     }
 
-    /********************************************************/
+    private void IncreaseTime()
+    {
+      // Increase Global Time
+      GlobalTime++;
+      // Increase Running Times
+      Running.tTra++;
+      // Icrease waiting time to all ready processes 
+      foreach (Process p in Ready) {
+        p.tEsp++;
+      }
+      // Icrease blocked time to all blocked processes 
+      bool DeInterrupt = false;
+      foreach (Process p in Blocked) {
+        if (p.tBlo++ == 8) DeInterrupt = true;
+      }
+      if (DeInterrupt) Deinterrupt();
+    }
+
     private async Task WasKeyPressed(MainWindow mainWindow)
     {
       switch (mainWindow.KeyPressed) {
         case "I":
-          mainWindow.tblBlocked.Items.Add(Running);
           wasBlocked = true;
           Interrupt();
           break;
         case "E":
           Running.OpeResult = "ERROR!";
-          wasInterrupted = true;
+          wasInterru = true;
           break;
         case "P":
           while (mainWindow.KeyPressed != "C") {
@@ -132,35 +143,32 @@ namespace STL_ACT_1
     public void Admit()
     {
       while (New.Count > 0 && (Ready.Count + Blocked.Count) < MEMORY_SIZE) {
+        Running.tLle = GlobalTime;
         Ready.Enqueue(New.Dequeue());
       }
     }
 
     public void Dispatch()
     {
-      if (Ready.Count > 0) {
-        Running = Ready.Dequeue();
-      }
+      Running.tResp = GlobalTime;
+      Running = Ready.Dequeue();
     }
 
     public void Interrupt()
     {
       Blocked.Enqueue(Running);
-      if (Ready.Count > 0) {
-        Running = Ready.Dequeue();
-      }
     }
 
     public void Deinterrupt()
     {
-      if (Blocked.Count > 0) {
-        Ready.Enqueue(Blocked.Dequeue());
-      }
+      Ready.Enqueue(Blocked.Dequeue());
     }
 
     public void Exit()
     {
-      Terminated.Push(Running);
+      Running.tFin = GlobalTime;
+      Running.tRet = Running.tFin - Running.tLle;
+      Terminated.Enqueue(Running);
     }
   }
 }
