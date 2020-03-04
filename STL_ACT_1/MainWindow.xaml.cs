@@ -41,13 +41,8 @@ namespace STL_ACT_1
       lblTieTra.Content = p.tTra;
       lblTieRes.Content = p.tRest;
 
-      lblProRes.Content = (schedule.New.Count + schedule.Ready.Count + schedule.Blocked.Count).ToString();
-      lblGloTime.Content = schedule.GlobalTime.ToString();
-    }
-
-    internal void UpdateTableNew()
-    {
-      tblNew.Items.RemoveAt(tblNew.Items.Count);
+      lblProRes.Content = schedule.New.Count;
+      lblGloTime.Content = schedule.GlobalTime;
     }
 
     internal void UpdateTable(Queue<Process> collection, DataGrid table)
@@ -69,8 +64,6 @@ namespace STL_ACT_1
       tblTerminated.Items.Clear();
       tblBlocked.Items.Clear();
       tblReady.Items.Clear();
-      tblTimes.Items.Clear();
-      tblNew.Items.Clear();
 
       lblNumPro.Content = "";
       lblTME_PE.Content = "";

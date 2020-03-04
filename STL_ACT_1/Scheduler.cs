@@ -36,36 +36,31 @@ namespace Scheduler
     {
       Admit();
       while (Ready.Count > 0 || Blocked.Count > 0) {
-        // Reset variables
-        wasInterru = false;
-        wasBlocked = false;
-
         Admit();
         Dispatch();
-
-        // --------- WINDOW ----------- //
-        mW.UpdateLabels(Running);
-        mW.UpdateTable(New, mW.tblNew); // TODO
-        mW.UpdateTable(Ready, mW.tblReady);
-        mW.UpdateTable(Terminated, mW.tblTerminated);
-        // ---------------------------- //
 
         await ExecuteRunning();
 
         if (!wasBlocked && Running.Exists) {
           Exit();
         }
+        wasInterru = false;
+        wasBlocked = false;
+
+        // --------- WINDOW ----------- //
+        mW.UpdateLabels(new Process());
       }
-      mW.UpdateTable(Terminated, mW.tblTerminated); // TODO
-      mW.UpdateTable(Terminated, mW.tblTimes);
     }
 
     public void Admit()
     {
-      int countRunning = Running.Exists ? 1 : 0;
-      while (New.Count > 0 && Ready.Count + Blocked.Count + countRunning < MEMORY_LIMIT) {
+      int RunningCount = Running.Exists ? 1 : 0;
+      while (New.Count > 0 && Ready.Count + Blocked.Count + RunningCount < MEMORY_LIMIT) {
         Running.tLle = GlobalTime;
-        Ready.Enqueue(New.Dequeue());
+        var p = New.Dequeue();
+        Ready.Enqueue(p);
+        // --------- WINDOW ----------- //
+        mW.tblReady.Items.Add(p);
       }
     }
 
@@ -74,7 +69,11 @@ namespace Scheduler
       if (Ready.Count > 0) {
         Running = Ready.Dequeue();
         Running.Exists = true;
-        Running.tResp = GlobalTime;
+        if (Running.tResp == -1) {
+          Running.tResp = GlobalTime;
+        }
+        // --------- WINDOW ----------- //
+        mW.tblReady.Items.Remove(Running);
       } else {
         Running = new Process();
       }
@@ -97,6 +96,8 @@ namespace Scheduler
       Running.tRet = Running.tFin - Running.tLle;
       Terminated.Enqueue(Running);
       Running.Exists = false;
+      // --------- WINDOW ----------- //
+      mW.tblTerminated.Items.Add(Running);
     }
 
     private async Task ExecuteRunning()
@@ -110,12 +111,12 @@ namespace Scheduler
           // Update process remaining time
           Running.tRest = Running.TME - Running.tTra;
 
-          await WasKeyPressed();
-
           // --------- WINDOW ----------- //
           mW.UpdateLabels(Running);
           mW.UpdateTable(Blocked, mW.tblBlocked);
           // ---------------------------- //
+
+          await WasKeyPressed();
 
           if (wasBlocked || wasInterru) { return; }
         }
@@ -124,6 +125,8 @@ namespace Scheduler
         await Task.Delay(1000);
         // Increase time for all processes
         IncreaseTime();
+        // --------- WINDOW ----------- //
+        mW.UpdateTable(Blocked, mW.tblBlocked);
       }
     }
 
@@ -164,7 +167,7 @@ namespace Scheduler
     private void CreateProcess(int ID)
     {
       // Random values for the process
-      int TME = r.Next(8, 18);
+      int TME = r.Next(5/*8*/, 5/*18*/);
       int num1 = r.Next(0, 100);
       int opeIdx = r.Next(0, 5);
       int num2 = r.Next(0, 100);

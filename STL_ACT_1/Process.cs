@@ -36,6 +36,7 @@ namespace STL_ACT_1
       this.Ope = Ope.ToString();
       OpeResult = Ope.result;
       tSer = TME;
+      tResp = -1;
     }
 
     public bool Equals(Process other)
