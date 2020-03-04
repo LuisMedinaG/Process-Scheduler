@@ -1,9 +1,9 @@
-﻿using System;
+﻿using STL_ACT_1;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace STL_ACT_1
+namespace Scheduler
 {
   class Shceduler
   {
@@ -15,7 +15,7 @@ namespace STL_ACT_1
     public Queue<Process> Terminated { get; set; }
 
     private static readonly Random r = new Random();
-    private static readonly int MEMORY_SIZE = 5;
+    private const int MEMORY_SIZE = 5;
     private bool wasInterru;
     private bool wasBlocked;
 
@@ -47,7 +47,7 @@ namespace STL_ACT_1
         mainWindow.UpdateTable(Terminated, mainWindow.tblTerminated); // TODO
         // ---------------------------- //
 
-        await ExecuteRunning(mainWindow);
+        await ExecuteRunning(mainWindow).ConfigureAwait(false);
 
         if (!wasBlocked) {
           Exit();
@@ -65,13 +65,13 @@ namespace STL_ACT_1
     {
       while (Running.tTra < Running.TME) {
         // Stops for a second
-        await Task.Delay(1000);
+        await Task.Delay(1000).ConfigureAwait(false);
         // Increase time for all processes
         IncreaseTime();
         // Update process remaining time
         Running.tRest = Running.TME - Running.tTra;
 
-        await WasKeyPressed(mainWindow);
+        await WasKeyPressed(mainWindow).ConfigureAwait(false);
 
         // --------- WINDOW ----------- //
         mainWindow.UpdateLabels();
@@ -113,7 +113,7 @@ namespace STL_ACT_1
           break;
         case "P":
           while (mainWindow.KeyPressed != "C") {
-            await Task.Delay(1000);
+            await Task.Delay(1000).ConfigureAwait(false);
           }
           break;
       }
@@ -142,7 +142,7 @@ namespace STL_ACT_1
 
     public void Admit()
     {
-      while (New.Count > 0 && (Ready.Count + Blocked.Count) < MEMORY_SIZE) {
+      while (New.Count > 0 && Ready.Count + Blocked.Count < MEMORY_SIZE) {
         Running.tLle = GlobalTime;
         Ready.Enqueue(New.Dequeue());
       }
