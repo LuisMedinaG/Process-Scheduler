@@ -1,6 +1,7 @@
 ﻿using Scheduler;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,20 +10,19 @@ namespace STL_ACT_1
   public partial class MainWindow : Window
   {
     private Scheduler.Scheduler schedule;
-    public string KeyPressed;
+    internal string KeyPressed;
 
     public MainWindow()
     {
       InitializeComponent();
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+    private void ButtonStart_Click(object sender, RoutedEventArgs e)
     {
       int totalProcesses = (int)txtBoxTotalProc.Value;
 
       if (totalProcesses > 0) {
-        txtBoxTotalProc.Text = totalProcesses.ToString();
-        ClearAll();
+        ClearWindow();
         EnableFields(false);
         // ---------- SCHEDULER ---------- //
         schedule = new Scheduler.Scheduler(this);
@@ -59,7 +59,7 @@ namespace STL_ACT_1
       bttnStart.IsEnabled = state;
     }
 
-    internal void ClearAll()
+    private void ClearWindow()
     {
       tblTerminated.Items.Clear();
       tblBlocked.Items.Clear();

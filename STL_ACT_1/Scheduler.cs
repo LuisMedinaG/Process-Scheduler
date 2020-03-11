@@ -39,7 +39,7 @@ namespace Scheduler
         Admit();
         Dispatch();
 
-        await ExecuteRunning();
+        await ExecuteRunning().ConfigureAwait(true);
 
         if (!wasBlocked && Running.Exists) {
           Exit();
@@ -56,8 +56,8 @@ namespace Scheduler
     {
       int RunningCount = Running.Exists ? 1 : 0;
       while (New.Count > 0 && Ready.Count + Blocked.Count + RunningCount < MEMORY_LIMIT) {
-        Running.tLle = GlobalTime;
         var p = New.Dequeue();
+        p.tLle = GlobalTime;
         Ready.Enqueue(p);
         // --------- WINDOW ----------- //
         mW.tblReady.Items.Add(p);
@@ -69,8 +69,9 @@ namespace Scheduler
       if (Ready.Count > 0) {
         Running = Ready.Dequeue();
         Running.Exists = true;
+
         if (Running.tResp == -1) {
-          Running.tResp = GlobalTime;
+          Running.tResp = GlobalTime - Running.tLle;
         }
         // --------- WINDOW ----------- //
         mW.tblReady.Items.Remove(Running);
@@ -93,7 +94,7 @@ namespace Scheduler
     public void Exit()
     {
       Running.tFin = GlobalTime;
-      Running.tRet = Running.tFin - Running.tLle;
+      Running.tRet = Running.tEsp + Running.tTra;
       Terminated.Enqueue(Running);
       Running.Exists = false;
       // --------- WINDOW ----------- //
@@ -105,7 +106,9 @@ namespace Scheduler
       if (Running.Exists) {
         while (Running.tTra < Running.TME) {
           // Stops for a second
-          await Task.Delay(1000);
+          await Task.Delay(1000).ConfigureAwait(true);
+          // Increase time for running processes
+          Running.tTra++;
           // Increase time for all processes
           IncreaseTime();
           // Update process remaining time
@@ -116,13 +119,13 @@ namespace Scheduler
           mW.UpdateTable(Blocked, mW.tblBlocked);
           // ---------------------------- //
 
-          await WasKeyPressed();
+          await WasKeyPressed().ConfigureAwait(true);
 
           if (wasBlocked || wasInterru) { return; }
         }
       } else {
         // Stops for a second
-        await Task.Delay(1000);
+        await Task.Delay(1000).ConfigureAwait(true);
         // Increase time for all processes
         IncreaseTime();
         // --------- WINDOW ----------- //
@@ -135,7 +138,7 @@ namespace Scheduler
       // Increase Global Time
       GlobalTime++;
       // Increase Running Times
-      if (Running.Exists) { Running.tTra++; }
+      // if (Running.Exists) { Running.tTra++; }
       // Icrease waiting time to all ready processes 
       foreach (Process p in Ready) {
         p.tEsp++;
@@ -167,7 +170,7 @@ namespace Scheduler
     private void CreateProcess(int ID)
     {
       // Random values for the process
-      int TME = r.Next(5/*8*/, 5/*18*/);
+      int TME = r.Next(8, 18);
       int num1 = r.Next(0, 100);
       int opeIdx = r.Next(0, 5);
       int num2 = r.Next(0, 100);
@@ -190,7 +193,7 @@ namespace Scheduler
           break;
         case "P":
           while (mW.KeyPressed != "C") {
-            await Task.Delay(1000);
+            await Task.Delay(1000).ConfigureAwait(true);
           }
           break;
       }

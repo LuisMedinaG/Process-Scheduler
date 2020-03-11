@@ -19,7 +19,7 @@
 
     <Label Content="Número de procesos" Margin="10,10,10,0" VerticalAlignment="Top" FontWeight="Bold" Height="26"/>
     <wpfTool:UIntegerUpDown x:Name="txtBoxTotalProc" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="100" RenderTransformOrigin="-0.135,0.7" TabIndex="1" IsManipulationEnabled="True" MaxLength="3" Minimum="1" Maximum="100" DefaultValue="1" ParsingNumberStyle="Integer" Text="1" Height="20"/>
-    <Button x:Name="bttnStart" Content="Empezar" Margin="120,40,5,10" Click="Button_Click" TabIndex="2"/>
+    <Button x:Name="bttnStart" Content="Empezar" Margin="120,40,5,10" Click="ButtonStart_Click" TabIndex="2"/>
 
     <GroupBox Header="Datos globales" Margin="5,10,9,10" Grid.ColumnSpan="2" Grid.Column="1"/>
     <Label Content="Contador global:" HorizontalAlignment="Left" Margin="35,30,0,0" VerticalAlignment="Top" Width="108" FontWeight="Bold" Grid.Column="1" Height="26"/>
@@ -32,7 +32,7 @@
         <DataGrid.Columns>
           <DataGridTextColumn Header = "Id" Binding="{Binding ID}" HeaderStringFormat="" Width="Auto" CanUserResize="False" MaxWidth="20" MinWidth="10"/>
           <DataGridTextColumn Header = "TME" Binding="{Binding TME}" Width="Auto"/>
-          <DataGridTextColumn Binding="{Binding tEsp}" Header="T. Transcurrido" Width="Auto"/>
+          <DataGridTextColumn Binding="{Binding tTra}" Header="T. Transcurrido" Width="Auto"/>
         </DataGrid.Columns>
       </DataGrid>
     </GroupBox>
@@ -68,12 +68,13 @@
           <DataGridTextColumn Header = "Id" Binding="{Binding ID}" Width="Auto" />
           <DataGridTextColumn Header = "Operación" Binding="{Binding Ope}" Width="Auto"/>
           <DataGridTextColumn Header = "Resultado" Binding="{Binding OpeResult}"/>
-          <DataGridTextColumn Header = "T Lle." Binding="{Binding tLle}" Width="Auto" />
-          <DataGridTextColumn Header = "T Fin." Binding="{Binding tFin}" Width="Auto"/>
-          <DataGridTextColumn Header = "T Ret." Binding="{Binding tRet}" Width="Auto"/>
-          <DataGridTextColumn Header = "T Res." Binding="{Binding tResp}" Width="Auto"/>
-          <DataGridTextColumn Header = "T Esp." Binding="{Binding tEsp}" Width="Auto"/>
-          <DataGridTextColumn Header = "T Ser." Binding="{Binding tSer}" Width="Auto"/>
+          <DataGridTextColumn Header = "T Lle" Binding="{Binding tLle}" Width="Auto" />
+          <DataGridTextColumn Header = "T Fin" Binding="{Binding tFin}" Width="Auto"/>
+          <DataGridTextColumn Header = "T Ret" Binding="{Binding tRet}" Width="Auto"/>
+          <DataGridTextColumn Header = "T Res" Binding="{Binding tResp}" Width="Auto"/>
+          <DataGridTextColumn Header = "T Esp" Binding="{Binding tEsp}" Width="Auto"/>
+          <DataGridTextColumn Header = "T TME" Binding="{Binding tSer}" Width="Auto"/>
+          <DataGridTextColumn Header = "T Ser" Binding="{Binding tTra}" Width="Auto"/>
         </DataGrid.Columns>
       </DataGrid>
     </GroupBox>
