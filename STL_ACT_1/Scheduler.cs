@@ -5,44 +5,49 @@ using System.Threading.Tasks;
 
 namespace Scheduler
 {
-  class Scheduler
+  internal class Scheduler
   {
     public int GlobalTime { get; set; }
+    private int total { get; set; }
+
     public Queue<Process> New { get; set; }
     public Queue<Process> Ready { get; set; }
     public Process Running { get; set; }
     public Queue<Process> Blocked { get; set; }
-    public Queue<Process> Terminated { get; set; }
+    public Queue<Process> Exit { get; set; }
 
     private static readonly Random r = new Random();
-    private const int MEMORY_LIMIT = 5;
+    private readonly int MEMORY_LIMIT = 5;
+
     private bool wasInterru;
     private bool wasBlocked;
 
-    MainWindow mW;
+    private MainWindow mW;
 
     public Scheduler(MainWindow mW)
     {
-      GlobalTime = 0;
       New = new Queue<Process>();
       Ready = new Queue<Process>();
       Running = new Process();
       Blocked = new Queue<Process>();
-      Terminated = new Queue<Process>();
+      Exit = new Queue<Process>();
+
       this.mW = mW;
     }
 
-    public async void StartProcessing()
+    public async 
+    Task
+StartProcessing()
     {
       Admit();
-      while (Ready.Count > 0 || Blocked.Count > 0) {
+      while(Ready.Count > 0 || Blocked.Count > 0) {
         Admit();
         Dispatch();
 
         await ExecuteRunning().ConfigureAwait(true);
 
-        if (!wasBlocked && Running.Exists) {
-          Exit();
+        if(!wasBlocked && Running.State == 3) {
+          Terminate();
         }
         wasInterru = false;
         wasBlocked = false;
@@ -54,26 +59,29 @@ namespace Scheduler
 
     public void Admit()
     {
-      int RunningCount = Running.Exists ? 1 : 0;
-      while (New.Count > 0 && Ready.Count + Blocked.Count + RunningCount < MEMORY_LIMIT) {
-        var p = New.Dequeue();
+      int processRunning = 0;
+      if(Running.State == 3)
+        processRunning = 1;
+
+      while(New.Count > 0 && Ready.Count + Blocked.Count + processRunning < MEMORY_LIMIT) {
+        Process p = New.Dequeue();
+        p.State = 2;
+        p.tEsp = 0;
         p.tLle = GlobalTime;
         Ready.Enqueue(p);
-        // --------- WINDOW ----------- //
         mW.tblReady.Items.Add(p);
       }
     }
 
     public void Dispatch()
     {
-      if (Ready.Count > 0) {
+      if(Ready.Count > 0) {
         Running = Ready.Dequeue();
-        Running.Exists = true;
+        Running.State = 3;
 
-        if (Running.tResp == -1) {
+        if(Running.tResp == -1)
           Running.tResp = GlobalTime - Running.tLle;
-        }
-        // --------- WINDOW ----------- //
+
         mW.tblReady.Items.Remove(Running);
       } else {
         Running = new Process();
@@ -83,28 +91,30 @@ namespace Scheduler
     public void Interrupt()
     {
       Blocked.Enqueue(Running);
-      Running.Exists = false;
+      Running.State = 4;
     }
 
     public void Deinterrupt()
     {
-      Ready.Enqueue(Blocked.Dequeue());
+      var p = Blocked.Dequeue();
+      p.State = 2;
+      Ready.Enqueue(p);
     }
 
-    public void Exit()
+    public void Terminate()
     {
       Running.tFin = GlobalTime;
       Running.tRet = Running.tEsp + Running.tTra;
-      Terminated.Enqueue(Running);
-      Running.Exists = false;
+      Exit.Enqueue(Running);
+      Running.State = 5;
       // --------- WINDOW ----------- //
       mW.tblTerminated.Items.Add(Running);
     }
 
     private async Task ExecuteRunning()
     {
-      if (Running.Exists) {
-        while (Running.tTra < Running.TME) {
+      if(Running.State == 3) {
+        while(Running.tTra < Running.TME) {
           // Stops for a second
           await Task.Delay(1000).ConfigureAwait(true);
           // Increase time for running processes
@@ -121,13 +131,16 @@ namespace Scheduler
 
           await WasKeyPressed().ConfigureAwait(true);
 
-          if (wasBlocked || wasInterru) { return; }
+          if(wasBlocked || wasInterru) { return; }
         }
       } else {
         // Stops for a second
         await Task.Delay(1000).ConfigureAwait(true);
         // Increase time for all processes
         IncreaseTime();
+
+        await WasKeyPressed().ConfigureAwait(true);
+        
         // --------- WINDOW ----------- //
         mW.UpdateTable(Blocked, mW.tblBlocked);
       }
@@ -137,23 +150,21 @@ namespace Scheduler
     {
       // Increase Global Time
       GlobalTime++;
-      // Increase Running Times
-      // if (Running.Exists) { Running.tTra++; }
       // Icrease waiting time to all ready processes 
-      foreach (Process p in Ready) {
+      foreach(Process p in Ready) {
         p.tEsp++;
       }
       // Icrease blocked time to all blocked processes 
       bool DeInterrupt = false;
-      foreach (Process p in Blocked) {
+      foreach(Process p in Blocked) {
         p.tEsp++;
-        p.tBlo++;
-        if (p.tBlo >= 8) {
+        p.tBloRes = 8 - p.tBlo++;
+        if(p.tBlo >= 8) {
           DeInterrupt = true;
           p.tBlo = 0;
         }
       }
-      if (DeInterrupt) {
+      if(DeInterrupt) {
         mW.tblBlocked.Items.Remove(Blocked.Peek());
         mW.tblReady.Items.Add(Blocked.Peek());
         Deinterrupt();
@@ -162,7 +173,8 @@ namespace Scheduler
 
     public void CreateProcesses(int totalProcesses)
     {
-      for (int id = 1; id <= totalProcesses; id++) {
+      this.total = totalProcesses;
+      for(int id = 1; id <= totalProcesses; id++) {
         CreateProcess(id);
       }
     }
@@ -175,26 +187,33 @@ namespace Scheduler
       int opeIdx = r.Next(0, 5);
       int num2 = r.Next(0, 100);
 
-      if (opeIdx == 3 || opeIdx == 4) { num2++; }
+      if(opeIdx == 3 || opeIdx == 4) { num2++; }
       var Ope = new Operation(num1, opeIdx, num2);
       New.Enqueue(new Process(ID, TME, Ope));
     }
 
     private async Task WasKeyPressed()
     {
-      switch (mW.KeyPressed) {
+      switch(mW.KeyPressed) {
         case "I":
           wasBlocked = true;
           Interrupt();
           break;
         case "E":
-          Running.OpeResult = "ERROR!";
+          Running.Result = "ERROR";
           wasInterru = true;
           break;
         case "P":
-          while (mW.KeyPressed != "C") {
+          while(mW.KeyPressed != "C") {
             await Task.Delay(1000).ConfigureAwait(true);
           }
+          break;
+        case "B":
+          var myBCP = new BCP(this);
+          myBCP.ShowDialog();
+          break;
+        case "N":
+          CreateProcess(++total);
           break;
       }
       mW.KeyPressed = "";

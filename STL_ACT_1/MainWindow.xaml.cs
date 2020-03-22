@@ -1,7 +1,4 @@
-﻿using Scheduler;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -17,17 +14,17 @@ namespace STL_ACT_1
       InitializeComponent();
     }
 
-    private void ButtonStart_Click(object sender, RoutedEventArgs e)
+    private async void ButtonStart_Click(object sender, RoutedEventArgs e)
     {
       int totalProcesses = (int)txtBoxTotalProc.Value;
 
-      if (totalProcesses > 0) {
+      if(totalProcesses > 0) {
         ClearWindow();
         EnableFields(false);
         // ---------- SCHEDULER ---------- //
         schedule = new Scheduler.Scheduler(this);
         schedule.CreateProcesses(totalProcesses);
-        schedule.StartProcessing();
+        await schedule.StartProcessing();
         // ------------------------------- //
         EnableFields(true);
       }
@@ -35,7 +32,7 @@ namespace STL_ACT_1
 
     internal void UpdateLabels(Process p)
     {
-      lblNumPro.Content = p.ID;
+      lblNumPro.Content = p.Id;
       lblTME_PE.Content = p.TME;
       lblOpe_PE.Content = p.Ope;
       lblTieTra.Content = p.tTra;
@@ -48,7 +45,7 @@ namespace STL_ACT_1
     internal void UpdateTable(Queue<Process> collection, DataGrid table)
     {
       table.Items.Clear();
-      foreach (Process p in collection) {
+      foreach(Process p in collection) {
         table.Items.Add(p);
       }
     }

@@ -1,0 +1,28 @@
+﻿<Window x:Class="Scheduler.BCP"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="BCP" Height="482.333" Width="591" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <DataGrid Margin="8,65,10,10" x:Name="tblBCP" HorizontalContentAlignment="Center">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header = "Id" Binding="{Binding Id}" Width="Auto" />
+                <DataGridTextColumn Header = "Estado" Binding="{Binding State}" Width="Auto"/>
+                <DataGridTextColumn Header = "Operación" Binding="{Binding Ope}"  Width="Auto"/>
+                <DataGridTextColumn Header = "Resultado" Binding="{Binding Result}"/>
+                <DataGridTextColumn Header = "T Lle" Binding="{Binding tLle}" Width="Auto" />
+                <DataGridTextColumn Header = "T Fin" Binding="{Binding tFin}" Width="Auto"/>
+                <DataGridTextColumn Header = "T Ret" Binding="{Binding tRet}" Width="Auto"/>
+                <DataGridTextColumn Header = "T Resp" Binding="{Binding tResp}" Width="Auto"/>
+                <DataGridTextColumn Header = "T Esp" Binding="{Binding tEsp}" Width="Auto"/>
+                <DataGridTextColumn Header = "T Ser" Binding="{Binding tTra}" Width="Auto"/>
+                <DataGridTextColumn Header = "T Rest" Binding="{Binding tRest}" Width="Auto"/>
+                <DataGridTextColumn Header = "T Bloq. Falt" Binding="{Binding tBloRes}" Width="Auto"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Label Content="Estados proceso:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="100" Height="25"/>
+        <Label Content="1 = Nuevo, 2 = Admitido, 3 = Ejecucion, 4 = Bloqueado, 5 = Terminado, -1 = N/A"  HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="465" Height="25" TabIndex="2147483644"/>
+    </Grid>
+</Window>
