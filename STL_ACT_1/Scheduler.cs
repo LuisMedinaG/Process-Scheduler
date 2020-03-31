@@ -35,9 +35,7 @@ namespace Scheduler
       this.mW = mW;
     }
 
-    public async 
-    Task
-StartProcessing()
+    public async Task StartProcessing()
     {
       Admit();
       while(Ready.Count > 0 || Blocked.Count > 0) {
@@ -61,7 +59,7 @@ StartProcessing()
     {
       int processRunning = 0;
       if(Running.State == 3)
-        processRunning = 1;
+        processRunning++;
 
       while(New.Count > 0 && Ready.Count + Blocked.Count + processRunning < MEMORY_LIMIT) {
         Process p = New.Dequeue();
@@ -140,7 +138,7 @@ StartProcessing()
         IncreaseTime();
 
         await WasKeyPressed().ConfigureAwait(true);
-        
+
         // --------- WINDOW ----------- //
         mW.UpdateTable(Blocked, mW.tblBlocked);
       }
@@ -214,6 +212,7 @@ StartProcessing()
           break;
         case "N":
           CreateProcess(++total);
+          Admit();
           break;
       }
       mW.KeyPressed = "";

@@ -190,7 +190,7 @@ namespace STL_ACT_1 {
             this.bttnStart = ((System.Windows.Controls.Button)(target));
             
             #line 22 "..\..\MainWindow.xaml"
-            this.bttnStart.Click += new System.Windows.RoutedEventHandler(this.ButtonStart_ClickAsync);
+            this.bttnStart.Click += new System.Windows.RoutedEventHandler(this.ButtonStart_Click);
             
             #line default
             #line hidden
